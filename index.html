@@ -50,7 +50,7 @@
   <div class="container">
     <h1 class="header">Blood Donor Registration</h1>
     <div class="form-container">
-      <form id="regForm" onsubmit="return validateForm()">
+      <form id="regForm" novalidate onsubmit="return validateForm()">
 
         <div class="form-group">
           Full Name <input type="text" id="fname" name="fname" required minlength="3">
@@ -128,7 +128,7 @@
     </div>
 
   </div>
-  <table id="list" style="">
+  <table id="list">
     <thead>
       <tr>
         <th>Name</th>
@@ -141,6 +141,147 @@
     <tbody>
     </tbody>
   </table>
+
+  <script>
+    let fname = document.getElementById("fname").value;
+    let sid = document.getElementById("sid").value;
+    let phone = document.getElementById("phone").value;
+    let age = document.getElementById("age").value;
+    let bgroup = document.getElementById("bgroup").value;
+    let donated = document.querySelector('input[name="donated"]:checked')?.value;
+    let agree = document.getElementById("agree").checked;
+    let pass = document.getElementById("pass").value;
+    let pass2 = document.getElementById("pass2").value;
+
+
+    let donors = [];
+
+    function validateForm() {
+      let fname = document.getElementById("fname").value.trim();
+      let sid = document.getElementById("sid").value;
+      let phone = document.getElementById("phone").value;
+      let age = document.getElementById("age").value;
+      let bgroup = document.getElementById("bgroup").value;
+      let donated = document.querySelector('input[name="donated"]:checked')?.value;
+      let agree = document.getElementById("agree").checked;
+      let pass = document.getElementById("pass").value;
+      let pass2 = document.getElementById("pass2").value;
+
+      let valid = true;
+      document.querySelectorAll(".error").forEach(function (error) {
+        error.innerText = "";
+        error.style.color = "red";
+      });
+
+
+      if (fname.length < 3) {
+        document.getElementById("err-fname").innerText =
+          "Name must have at least 3 characters";
+        valid = false;
+      }
+
+      if (!/^[0-9]{2}-[0-9]{5}-[0-9]$/.test(sid)) {
+        document.getElementById("err-sid").innerText =
+          "Invalid AIUB ID";
+        valid = false;
+      }
+
+      if (!/^[0-9]{11}$/.test(phone)) {
+        document.getElementById("err-phone").innerText =
+          "Mobile must be exactly 11 digits";
+        valid = false;
+      }
+
+      if (age === "" || !Number.isInteger(Number(age)) ||
+        Number(age) < 18 || Number(age) > 60) {
+        document.getElementById("err-age").innerText =
+          "Age must be between 18 and 60";
+        valid = false;
+      }
+
+      if (bgroup === "") {
+        document.getElementById("err-bgroup").innerText =
+          "Select a blood group";
+        valid = false;
+      }
+
+      if (!donated) {
+        document.getElementById("err-donated").innerText =
+          "Choose Yes or No";
+        valid = false;
+      }
+
+      if (!agree) {
+        document.getElementById("err-agree").innerText =
+          "You must tick the box";
+        valid = false;
+      }
+
+      if (pass.length < 6) {
+        document.getElementById("err-pass").innerText =
+          "Password must have at least 6 characters";
+        valid = false;
+      }
+
+      if (pass2 === "" || pass2 !== pass) {
+        document.getElementById("err-pass2").innerText =
+          "Passwords do not match";
+        valid = false;
+      }
+      if (valid) {
+        let donor = {
+          name: fname,
+          id: sid,
+          group: bgroup
+        };
+
+        donors.push(donor);
+
+        let tbody = document.querySelector("#list tbody");
+        let row = document.createElement("tr");
+        let nameCell = document.createElement("td");
+        nameCell.innerText = donor.name;
+        let idCell = document.createElement("td");
+        idCell.innerText = donor.id;
+        let groupCell = document.createElement("td");
+        groupCell.innerText = donor.group;
+
+
+        let actionCell = document.createElement("td");
+        let removeBtn = document.createElement("button");
+        removeBtn.innerText = "Remove";
+        removeBtn.type = "button";
+
+        removeBtn.onclick = function () {
+          let index = donors.indexOf(donor);
+
+          if (index !== -1) {
+            donors.splice(index, 1);
+          }
+
+          row.remove();
+          document.getElementById("count").innerText =
+            "Total donors: " + donors.length;
+        };
+
+        actionCell.appendChild(removeBtn);
+        row.appendChild(nameCell);
+        row.appendChild(idCell);
+        row.appendChild(groupCell);
+        row.appendChild(actionCell);
+
+        tbody.appendChild(row);
+
+        document.getElementById("count").innerText =
+          "Total donors: " + donors.length;
+
+        document.getElementById("regForm").reset();
+      }
+      return false;
+    }
+
+
+  </script>
 </body>
 
 </html>
